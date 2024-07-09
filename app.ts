@@ -10,8 +10,9 @@ app.use(express.json());
 // Rutas relacionadas con usuarios
 app.use(userRouter);
 
+const PORT = 8081;
+const HOST = '0.0.0.0';  // Escuchar en todas las interfaces de red
 
-
-app.listen(8081, () => {
-    signale.success("Server online in port 8081");
+app.listen(PORT, HOST, () => {
+    signale.success(`Server online on port ${PORT}`);
 });

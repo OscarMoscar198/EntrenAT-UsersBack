@@ -190,31 +190,36 @@ async setAsInactive(id: number | null): Promise<number | null> {
 
 // implementa el metodo updateUserConfig para podder actualizar la configuracion de un usuario
 
-async updateUserConfig(
-  id: number,
-  UserID: number,
-  canName: boolean,
-  canDescription: boolean,
-  canAge: boolean,
-  canWeight: boolean,
-  canHeight: boolean,
-  canSex: boolean,
-  canEmail: boolean,
-  canProfile: boolean,
-  canGym: boolean,
-  isPremium: boolean
-): Promise<UserConfig | null> {
+async updateUserConfig(id: number, configParams: Partial<UserConfig>): Promise<UserConfig | null> {
   try {
-      const sql = 'UPDATE UserConfig SET UserID = ?, canName = ?, canDescription = ?, canAge = ?, canWeight = ?, canHeight = ?, canSex = ?, canEmail = ?, canProfile = ?, canGym = ?, isPremium = ? WHERE userID = ?';
-      const [resultSet]: any = await query(sql, [UserID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium]);
+    const fields = Object.keys(configParams).map(key => `${key} = ?`).join(', ');
+    const values = Object.values(configParams);
+    const sql = `UPDATE UserConfig SET ${fields} WHERE userID = ?`;
+    const [resultSet]: any = await query(sql, [...values, id]);
 
-      if (!resultSet || resultSet.affectedRows === 0) {
-          return null;
-      }
-      return new UserConfig(UserID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium);
+    if (!resultSet || resultSet.affectedRows === 0) {
+      return null;
+    }
+
+    // Reconstruir UserConfig desde configParams y el id
+    const updatedUserConfig = new UserConfig(
+      id,
+      configParams.canName ?? false,
+      configParams.canDescription ?? false,
+      configParams.canAge ?? false,
+      configParams.canWeight ?? false,
+      configParams.canHeight ?? false,
+      configParams.canSex ?? false,
+      configParams.canEmail ?? false,
+      configParams.canProfile ?? false,
+      configParams.canGym ?? false,
+      configParams.isPremium ?? false,
+    );
+
+    return updatedUserConfig;
   } catch (error) {
-      console.error('Error al actualizar la configuración del usuario:', error);
-      throw new Error('No se pudo actualizar la configuración del usuario.'); // O maneja el error de la manera que prefieras.
+    console.error('Error updating user config:', error);
+    throw new Error('Failed to update user config.');
   }
 }
 

@@ -27,20 +27,8 @@ export interface IUserRepository {
 
   setAsInactive(id: number): Promise<number | null>;
 
-  updateUserConfig(
-    id: number,
-    UserID: number,
-    canName: boolean,
-    canDescription: boolean,
-    canAge: boolean,
-    canWeight: boolean,
-    canHeight: boolean,
-    canSex: boolean,
-    canEmail: boolean,
-    canProfile: boolean,
-    canGym: boolean,
-    isPremium: boolean
-  ): Promise<UserConfig | any>;
+  updateUserConfig(id: number, configParams: Partial<UserConfig>): Promise<UserConfig | any>;
+
 
   CreateUserConfig(
     UserID: number,

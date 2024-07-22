@@ -39,6 +39,7 @@ export class RegisterController {
         return res.status(201).send({
           status: "success",
           data: {
+            id: registerUser.id,
             name: registerUser.name,
             email: registerUser.email,
           },

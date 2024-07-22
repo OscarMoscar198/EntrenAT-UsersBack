@@ -16,7 +16,7 @@ export interface IUserRepository {
 ):Promise<VerifyLogin | string | null>  //listo
 
 
-  listAllUsers(): Promise<User[] | null>;
+  listAllUsers(): Promise<User[] | any>;
 
   deleteUserById(id: number): Promise<string | null>;
 

@@ -78,36 +78,36 @@ export class UserMysqlRepository implements IUserRepository {
 
 
 
-  async listAllUsers(): Promise<User[] | any> {
-    try {
-      const sql = "SELECT * FROM usuario"; // Cambiado a "Users" con mayúscula según la tabla de la base de datos
-      const [rows]: any = await query(sql);
+async listAllUsers(): Promise<User[] | any> {
+  try {
+    const sql = "SELECT * FROM usuario";
+    const [rows]: any = await query(sql);
 
-      if (!Array.isArray(rows)) {
-        throw new Error('Rows is not an array');
-      }
-
-      // Mapear los resultados directamente a instancias de User
-      const users: User[] = rows.map((row: any) => {
-        console.log("row: ", row);
-        return new User(
-          row.userid,
-          row.nombre,
-          row.correo,
-          row.contraseña,
-          row.altura,
-          row.peso,
-          row.gender
-         
-        );
-      });
-
-      return users;
-    } catch (error) {
-      console.error("Error al listar usuarios:", error);
-      return null; // Opcionalmente, podrías lanzar una excepción en lugar de retornar null
+    if (!Array.isArray(rows)) {
+      throw new Error('Rows is not an array');
     }
+
+    console.log("rows: ", rows); // Log adicional
+
+    const users: User[] = rows.map((row: any) => {
+      console.log("row: ", row); // Log para cada fila
+      return new User(
+        row.userid,
+        row.nombre,
+        row.correo,
+        row.contraseña,
+        row.altura,
+        row.peso,
+        row.gender
+      );
+    });
+
+    return rows;
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+    return null;
   }
+}
 
   
   async deleteUserById(id: number): Promise<string | null> {

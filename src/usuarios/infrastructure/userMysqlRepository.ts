@@ -1,5 +1,5 @@
 import { query } from "../../database/conecction";
-import { User, VerifyLogin } from "../domain/user";
+import { User, UserConfig, VerifyLogin } from "../domain/user";
 import { IUserRepository } from "../domain/userRepository";
 import { compare, encrypt } from './helpers/hash';
 import { tokenSigIn } from "./helpers/token";
@@ -9,7 +9,17 @@ import { tokenSigIn } from "./helpers/token";
 
 
 export class UserMysqlRepository implements IUserRepository {
-  async registerUser(name: string, email: string, password: string, height: number, weight: number, sex: string): Promise<User | null> {
+  
+  async registerUser(
+    name: string, 
+    email: string, 
+    password: string, 
+    height: number, 
+    weight: number, 
+    sex: string, 
+        nickname: string, 
+
+  ): Promise<User | null> {
     try {
 
       const checkEmailSql = `
@@ -24,12 +34,13 @@ export class UserMysqlRepository implements IUserRepository {
             }
       
       const hashPassword = await encrypt(password);
-      const sql = "INSERT INTO usuario (nombre, correo, contraseña, altura, peso, gender) VALUES (?, ?, ?, ?, ?, ?)";
-      const params: any[] = [name, email, hashPassword, height, weight, sex];
+      const sql = "INSERT INTO usuario (nombre, correo, contraseña, altura, peso, gender, nickname) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      const params: any[] = [name, email, hashPassword, height, weight, sex, nickname];
       const [result]: any = await query(sql, params);
+      console.log("result: ", result); // Log adicional
       if (result.insertId) {
         // Crear una instancia de User con el ID generado
-        const user = new User(result.insertId, name, email, hashPassword, height, weight, sex);
+        const user = new User(result.insertId, name, email,hashPassword, height, weight, sex, nickname);
         return user;
       } else {
         console.error("No se pudo insertar el usuario en la base de datos.");
@@ -89,19 +100,7 @@ async listAllUsers(): Promise<User[] | any> {
 
     console.log("rows: ", rows); // Log adicional
 
-    const users: User[] = rows.map((row: any) => {
-      console.log("row: ", row); // Log para cada fila
-      return new User(
-        row.userid,
-        row.nombre,
-        row.correo,
-        row.contraseña,
-        row.altura,
-        row.peso,
-        row.gender
-      );
-    });
-
+    
     return rows;
   } catch (error) {
     console.error("Error al listar usuarios:", error);
@@ -139,6 +138,7 @@ async getUserById(id: number): Promise<User | null> {
     const row = rows[0];
     const userData = new User(
       row.userid,
+      row.nickname,
       row.nombre,
       row.correo,
       row.contraseña,
@@ -163,7 +163,7 @@ async listAllInactiveUser(): Promise<User[] | null> {
           throw new Error('Error'); // Puedes manejar este caso según tus necesidades
       }
 
-      const users: User[] = rows.map(row => new User(row.id, row.name, row.phone, row.email, row.password, row.active, row.canlent));
+      const users: User[] = rows.map(row => new User(row.id, row.name, row.phone, row.email, row.nickname ,row.password, row.active, row.canlent));
       return users;
   } catch (error) {
       console.error("Error en listAllInactiveUser:", error);
@@ -187,6 +187,104 @@ async setAsInactive(id: number | null): Promise<number | null> {
       throw new Error('No se pudo activar el usuario.'); // O maneja el error de la manera que prefieras.
   }
 }
+
+// implementa el metodo updateUserConfig para podder actualizar la configuracion de un usuario
+
+async updateUserConfig(
+  id: number,
+  UserID: number,
+  canName: boolean,
+  canDescription: boolean,
+  canAge: boolean,
+  canWeight: boolean,
+  canHeight: boolean,
+  canSex: boolean,
+  canEmail: boolean,
+  canProfile: boolean,
+  canGym: boolean,
+  isPremium: boolean
+): Promise<UserConfig | null> {
+  try {
+      const sql = 'UPDATE UserConfig SET UserID = ?, canName = ?, canDescription = ?, canAge = ?, canWeight = ?, canHeight = ?, canSex = ?, canEmail = ?, canProfile = ?, canGym = ?, isPremium = ? WHERE userID = ?';
+      const [resultSet]: any = await query(sql, [UserID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium]);
+
+      if (!resultSet || resultSet.affectedRows === 0) {
+          return null;
+      }
+      return new UserConfig(UserID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium);
+  } catch (error) {
+      console.error('Error al actualizar la configuración del usuario:', error);
+      throw new Error('No se pudo actualizar la configuración del usuario.'); // O maneja el error de la manera que prefieras.
+  }
+}
+
+async CreateUserConfig(
+    userID: number,
+    canName: boolean,
+    canDescription: boolean,
+    canAge: boolean,
+    canWeight: boolean,
+    canHeight: boolean,
+    canSex: boolean,
+    canEmail: boolean,
+    canProfile: boolean,
+    canGym: boolean,
+    isPremium: boolean
+  ): Promise<UserConfig | any> {
+    try {
+      const sql = 'INSERT INTO UserConfig (userID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      const params = [
+        userID,
+        canName,
+        canDescription,
+        canAge,
+        canWeight,
+        canHeight,
+        canSex,
+        canEmail,
+        canProfile,
+        canGym,
+        isPremium
+      ];
+
+      // Verificación de parámetros no definidos
+      for (const param of params) {
+        if (param === undefined) {
+          throw new Error('Uno o más parámetros no están definidos.');
+        }
+      }
+
+      const [resultSet]: any = await query(sql, params);
+
+      if (!resultSet || resultSet.affectedRows === 0) {
+        return null;
+      }
+      return new UserConfig(userID, canName, canDescription, canAge, canWeight, canHeight, canSex, canEmail, canProfile, canGym, isPremium);
+    } catch (error) {
+      console.error('Error al crear la configuración del usuario:', error);
+      throw new Error('No se pudo crear la configuración del usuario.'); // O maneja el error de la manera que prefieras.
+    }
+  }
+
+  async getUserConfigById(userID: number): Promise<UserConfig | any> {
+      try {
+          const sql = 'SELECT * FROM UserConfig WHERE userID = ?';
+          const [rows]: any = await query(sql, [userID]);
+
+          if (!Array.isArray(rows) || rows.length === 0) {
+              return null;
+          }
+
+          const row = rows[0];
+          console.log("row: ", row); // Log adicional
+          return new UserConfig( row.userID, row.canName, row.canDescription, row.canAge, row.canWeight, row.canHeight, row.canSex, row.canEmail, row.canProfile, row.canGym, row.isPremium);
+      } catch (error) {
+          console.error('Error al obtener la configuración del usuario:', error);
+          throw new Error('No se pudo obtener la configuración del usuario.'); // O maneja el error de la manera que prefieras.
+
+      }
+    }
+  
 
 
 }

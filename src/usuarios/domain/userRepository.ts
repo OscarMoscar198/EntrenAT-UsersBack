@@ -1,4 +1,4 @@
-import { User, VerifyLogin } from "./user";
+import { User, UserConfig, VerifyLogin } from "./user";
 
 export interface IUserRepository {
   registerUser(
@@ -8,7 +8,8 @@ export interface IUserRepository {
     height: number,
     weight: number,
     sex: string,
-  ): Promise<User | null>;
+    nickname: string,
+  ): Promise<User | any>;
 
   loginUser(
     email:string,
@@ -26,7 +27,36 @@ export interface IUserRepository {
 
   setAsInactive(id: number): Promise<number | null>;
 
+  updateUserConfig(
+    id: number,
+    UserID: number,
+    canName: boolean,
+    canDescription: boolean,
+    canAge: boolean,
+    canWeight: boolean,
+    canHeight: boolean,
+    canSex: boolean,
+    canEmail: boolean,
+    canProfile: boolean,
+    canGym: boolean,
+    isPremium: boolean
+  ): Promise<UserConfig | any>;
 
+  CreateUserConfig(
+    UserID: number,
+    canName: boolean,
+    canDescription: boolean,
+    canAge: boolean,
+    canWeight: boolean,
+    canHeight: boolean,
+    canSex: boolean,
+    canEmail: boolean,
+    canProfile: boolean,
+    canGym: boolean,
+    isPremium: boolean
+  ): Promise<UserConfig | any>;
 
+  //listar configuracion por id
+  getUserConfigById(id: number): Promise<UserConfig | null>;
  
 }

@@ -6,9 +6,27 @@ export class User {
         public password: string,
         public height: number,
         public weight: number,
-        public sex: string,
+        public sex: string,   
+        public nickname: string,
+
      ){}
     
+  }
+
+  export class UserConfig {
+   constructor(
+         public userID: number,
+         public canName: boolean,
+         public canDescription: boolean,
+         public canAge: boolean,
+         public canWeight: boolean,
+         public canHeight: boolean,
+         public canSex: boolean,
+         public canEmail: boolean,
+         public canProfile: boolean,
+         public canGym: boolean,
+         public isPremium: boolean,
+   ){}
   }
 
   export class VerifyLogin{

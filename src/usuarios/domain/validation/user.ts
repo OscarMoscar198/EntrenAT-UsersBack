@@ -11,6 +11,8 @@ export class ValidatorRegisterUser {
     @IsEmail()
     public email: string;
 
+    
+    
     @IsNotEmpty()
     public height: number;
 

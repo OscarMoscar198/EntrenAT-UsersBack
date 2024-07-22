@@ -11,12 +11,18 @@ import { DeleteUserUseCase } from "../../application/deleteUserById";
 import { GetUserByIdController } from "./getUserByIdController";
 import { GetUserByIdUseCase } from "../../application/getUserByIdUseCase";
 
-
+import { UpdateUserConfigController } from "./updateUserConfigController";
+import { UpdateUserConfigUC } from "../../application/updateUserConfigUC";
 
 import { SetAsInactiveController } from "./setAsInactiveController";
 import { SetAsInactiveUseCase } from "../../application/setAsInactiveUseCase";
 import { LoginController } from "./loginController";
 import { LoginUseCase } from "../../application/loginUseCase";
+import { RegisterUserConfigUseCase } from "../../application/registerUserConfigUseCase";
+import { RegisterUserConfigController } from "./registerUserConfigController";
+
+import { GetUserConfigByIdUseCase } from "../../application/listUserConfigUseCase";
+import { GetUserConfigByIdController } from "./ListUserConfigurationController";
 
 export const userMysqlRepository = new UserMysqlRepository();
 
@@ -41,7 +47,14 @@ export const setAsInactiveUseCase = new SetAsInactiveUseCase(userMysqlRepository
 export const setAsInactiveController = new SetAsInactiveController(setAsInactiveUseCase)
 
 
+export const updateUserConfigUC = new UpdateUserConfigUC(userMysqlRepository) 
+export const updateUserConfigController = new UpdateUserConfigController(updateUserConfigUC)
 
+export const registerUserConfigUseCase = new RegisterUserConfigUseCase(userMysqlRepository)
+export const registerUserConfigController = new RegisterUserConfigController(registerUserConfigUseCase)
+
+export const getUserConfigByidUseCase = new GetUserConfigByIdUseCase(userMysqlRepository)
+export const getUserConfigByIdController = new GetUserConfigByIdController(getUserConfigByidUseCase)
 
 
 

@@ -10,6 +10,7 @@ export class RegisterUseCase {
   async run(
     name: string,
     email: string,
+    nickname: string,
     password: string, // Debe almacenarse de forma segura (hash + salt)
     height: number,
     weight: number,
@@ -18,6 +19,7 @@ export class RegisterUseCase {
     
     let data = new ValidatorRegisterUser(name, email, height, weight,sex, password);
     const validation = await validate(data)
+    console.log(validation)
     if (validation.length > 0) {
         throw new Error(JSON.stringify(validation));
     }
@@ -29,6 +31,7 @@ export class RegisterUseCase {
         height,
         weight,
         sex,
+        nickname,
       );
 
 

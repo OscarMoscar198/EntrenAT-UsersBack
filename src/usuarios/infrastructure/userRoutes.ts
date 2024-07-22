@@ -1,10 +1,11 @@
 import express from "express";
-import { registerController, setAsInactiveController } from "./controllers/dependencies";
+import { getUserConfigByIdController, registerController, registerUserConfigController, setAsInactiveController, updateUserConfigController } from "./controllers/dependencies";
 import { listAllUserController } from "./controllers/dependencies";
 import { getUserByIdController } from "./controllers/dependencies";
 import { deleteUserByIdController } from "./controllers/dependencies";
 import { loginController } from "./controllers/dependencies";
 import { validateToken } from "./helpers/verifyToken";
+import { GetUserConfigByIdController } from "./controllers/ListUserConfigurationController";
 
 export const userRouter = express.Router();
 
@@ -24,3 +25,8 @@ userRouter.get("/:id", validateToken,getUserByIdController.run.bind(getUserByIdC
 // Ruta para eliminar un usuario por su ID
 userRouter.delete("/:id", validateToken,deleteUserByIdController.run.bind(deleteUserByIdController));
 
+userRouter.put('/config', validateToken, updateUserConfigController.run.bind(updateUserConfigController))
+
+userRouter.post('/config/create', validateToken, registerUserConfigController.run.bind(registerUserConfigController))
+
+userRouter.get('/config/:id', validateToken, getUserConfigByIdController.run.bind(getUserConfigByIdController))

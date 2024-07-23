@@ -24,6 +24,9 @@ import { RegisterUserConfigController } from "./registerUserConfigController";
 import { GetUserConfigByIdUseCase } from "../../application/listUserConfigUseCase";
 import { GetUserConfigByIdController } from "./ListUserConfigurationController";
 
+import { UpdateUserController } from "./updateUserController";
+import { UpdateUserUC } from "../../application/updateUserUC";
+
 export const userMysqlRepository = new UserMysqlRepository();
 
 export const registerUseCase = new RegisterUseCase(userMysqlRepository);
@@ -57,4 +60,6 @@ export const getUserConfigByidUseCase = new GetUserConfigByIdUseCase(userMysqlRe
 export const getUserConfigByIdController = new GetUserConfigByIdController(getUserConfigByidUseCase)
 
 
+export const updateUserUC = new UpdateUserUC(userMysqlRepository) 
+export const updateUserController = new UpdateUserController(updateUserUC)
 

@@ -1,5 +1,5 @@
 import { query } from "../../database/conecction";
-import { User, UserConfig, VerifyLogin } from "../domain/user";
+import { User, UserConfig,  VerifyLogin } from "../domain/user";
 import { IUserRepository } from "../domain/userRepository";
 import { compare, encrypt } from './helpers/hash';
 import { tokenSigIn } from "./helpers/token";
@@ -40,7 +40,7 @@ export class UserMysqlRepository implements IUserRepository {
       console.log("result: ", result); // Log adicional
       if (result.insertId) {
         // Crear una instancia de User con el ID generado
-        const user = new User(result.insertId, name, email,hashPassword, height, weight, sex, nickname);
+        const user = new User(result.insertId, name, email,hashPassword, height, weight, sex, nickname, '', '', '');
         return user;
       } else {
         console.error("No se pudo insertar el usuario en la base de datos.");
@@ -145,6 +145,9 @@ async getUserById(id: number): Promise<User | null> {
       row.altura,
       row.peso,
       row.gender,
+      row.nickname,
+      row.descripcion,
+      row.img
     );
 
     
@@ -163,8 +166,8 @@ async listAllInactiveUser(): Promise<User[] | null> {
           throw new Error('Error'); // Puedes manejar este caso según tus necesidades
       }
 
-      const users: User[] = rows.map(row => new User(row.id, row.name, row.phone, row.email, row.nickname ,row.password, row.active, row.canlent));
-      return users;
+      //const users: User[] = rows.map(row => new User(row.id, row.name, row.phone, row.email, row.nickname ,row.password, row.active, row.canlent));
+      return null;
   } catch (error) {
       console.error("Error en listAllInactiveUser:", error);
       return null; // Retorna null en caso de error o podrías optar por retornar un array vacío dependiendo de tu lógica de negocio
@@ -187,6 +190,58 @@ async setAsInactive(id: number | null): Promise<number | null> {
       throw new Error('No se pudo activar el usuario.'); // O maneja el error de la manera que prefieras.
   }
 }
+
+async updateUser(id: number, configParams: Partial<User>): Promise<User | null> {
+  try {
+    const filteredConfigParams = Object.fromEntries(
+      Object.entries(configParams).filter(([_, value]) => value !== undefined)
+    );
+
+    const fields = Object.keys(filteredConfigParams)
+      .map(key => `${key} = ?`)
+      .join(', ');
+
+    if (fields.length === 0) {
+      throw new Error("No fields to update");
+    }
+
+    // Corrección: Eliminar 'id' de los valores
+    const values = Object.values(filteredConfigParams);
+    
+    const sql = `UPDATE usuario SET ${fields} WHERE UserID = ?`;
+
+    // Corrección: Pasar solo 'id' al final
+    const [resultSet]: any = await query(sql, [...values, id]);
+    
+
+    if (!resultSet || resultSet.affectedRows === 0) {
+      return null;
+    }
+
+    // Construir el objeto User con los valores actualizados
+    const updatedUser = new User(
+      id,
+      configParams.name || '',
+      configParams.email || '',
+      configParams.password || '',
+      configParams.height || 0,
+      configParams.weight || 0,
+      configParams.sex || '',
+      configParams.nickname || '',
+      configParams.description || '',
+      configParams.gym || '',
+      configParams.img || '',
+    );
+
+    console.log("updatedUser:", updatedUser);
+    return updatedUser;
+  } catch (error) {
+    console.error('Error updating user config:', error);
+    throw new Error('Failed to update user config.');
+  }
+}
+
+
 
 // implementa el metodo updateUserConfig para podder actualizar la configuracion de un usuario
 

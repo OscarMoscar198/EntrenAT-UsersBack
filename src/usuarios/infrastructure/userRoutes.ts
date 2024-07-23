@@ -1,5 +1,5 @@
 import express from "express";
-import { getUserConfigByIdController, registerController, registerUserConfigController, setAsInactiveController, updateUserConfigController } from "./controllers/dependencies";
+import { getUserConfigByIdController, registerController, registerUserConfigController, setAsInactiveController, updateUserConfigController, updateUserController } from "./controllers/dependencies";
 import { listAllUserController } from "./controllers/dependencies";
 import { getUserByIdController } from "./controllers/dependencies";
 import { deleteUserByIdController } from "./controllers/dependencies";
@@ -30,3 +30,5 @@ userRouter.put('/config', validateToken, updateUserConfigController.run.bind(upd
 userRouter.post('/config/create', validateToken, registerUserConfigController.run.bind(registerUserConfigController))
 
 userRouter.get('/config/:id', validateToken, getUserConfigByIdController.run.bind(getUserConfigByIdController))
+
+userRouter.put('/update', validateToken, updateUserController.run.bind(updateUserController))

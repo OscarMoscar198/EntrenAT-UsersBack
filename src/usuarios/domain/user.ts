@@ -8,11 +8,11 @@ export class User {
         public weight: number,
         public sex: string,   
         public nickname: string,
-
+        public description: string,
+        public img: string,
+        public gym: string
      ){}
-    
   }
-
   export class UserConfig {
    constructor(
          public userID: number,

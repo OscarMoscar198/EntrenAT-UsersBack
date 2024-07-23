@@ -28,6 +28,8 @@ export interface IUserRepository {
   setAsInactive(id: number): Promise<number | null>;
 
   updateUserConfig(id: number, configParams: Partial<UserConfig>): Promise<UserConfig | any>;
+  
+  updateUser(id: number, configParams: Partial<User>): Promise<User | any>;
 
 
   CreateUserConfig(
